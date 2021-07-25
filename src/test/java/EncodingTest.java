@@ -16,10 +16,8 @@ public class EncodingTest {
         double end = 2;
         int LENGTH = (int) Math.ceil(log2(Math.pow(10, precision) * (end - start)));
 
-        System.out.println(" -> ");
         boolean[] bitmap = Encoding.toBitMapVector(input, start, end, precision);
 
-        System.out.println(" <- ");
         double[] reconverted = Encoding.toDoubleVector(bitmap, start, end, precision);
 
         Vector.printBinary(input);

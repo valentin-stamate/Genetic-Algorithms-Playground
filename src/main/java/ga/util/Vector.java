@@ -36,4 +36,10 @@ public class Vector {
 
         System.out.println("");
     }
+
+    public static boolean[] copyOf(boolean[] gene) {
+        boolean[] copy = new boolean[gene.length];
+        System.arraycopy(gene, 0, copy, 0, gene.length);
+        return copy;
+    }
 }
