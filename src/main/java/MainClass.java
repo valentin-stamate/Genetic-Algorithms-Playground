@@ -1,5 +1,13 @@
+import implementation.GeneticAlgorithm;
+
 public class MainClass {
     public static void main(String... args) {
-        System.out.println("Hello World!");
+
+        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
+
+        geneticAlgorithm.showInfo();
+
+        geneticAlgorithm.start();
+
     }
 }

@@ -24,7 +24,7 @@ public class Encoding {
         return 1.0 * binary * (interval / MAX) + start;
     }
 
-    private static int calculateBitMapNumberLength(double interval, int precision) {
+    public static int calculateBitMapNumberLength(double interval, int precision) {
         return (int) Math.ceil(log2(Math.pow(10, precision) * interval));
     }
 

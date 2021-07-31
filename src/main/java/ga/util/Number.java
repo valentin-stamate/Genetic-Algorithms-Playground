@@ -8,4 +8,8 @@ public class Number {
         Random r = new Random();
         return start + (end - start) * r.nextDouble();
     }
+
+    public static double toPercent(double rawProb) {
+        return rawProb * 100;
+    }
 }

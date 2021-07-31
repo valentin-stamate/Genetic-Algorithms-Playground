@@ -20,8 +20,8 @@ public class EncodingTest {
 
         double[] reconverted = Encoding.toDoubleVector(bitmap, start, end, precision);
 
-        Vector.printBinary(input);
-        Vector.printBinary(reconverted);
+        Vector.print(input);
+        Vector.print(reconverted);
     }
 
     @Test

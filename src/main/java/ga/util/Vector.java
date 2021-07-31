@@ -17,7 +17,7 @@ public class Vector {
         return vector;
     }
 
-    public static void printBinary(double[] vector) {
+    public static void print(double[] vector) {
         System.out.print("| ");
         for (double x : vector) {
             System.out.printf("%6.3f ", x);
