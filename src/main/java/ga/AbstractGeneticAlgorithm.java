@@ -1,6 +1,10 @@
 package ga;
 
+import ga.config.GaConfig;
 import ga.member.AbstractMember;
+import ga.operators.crossover.AbstractCrossover;
+import ga.operators.crossover.OnePointCrossover;
+import ga.operators.mutation.AbstractMutation;
 import ga.operators.selection.AbstractSelection;
 import ga.operators.selection.TournamentSelection;
 import ga.util.Number;
@@ -18,17 +22,16 @@ public abstract class AbstractGeneticAlgorithm {
     protected final double mutationProbability = 0.007;
 
     /* Operators */
-    private final AbstractSelection selection = new TournamentSelection();
+    public final AbstractSelection abstractSelection = new TournamentSelection();
+    public final AbstractCrossover abstractCrossover = new OnePointCrossover();
 
-    /*dasdasdaljdasdksad===========================*/
+    /* TODO: dsakdj */
     protected final double geneLength = -1;
-
-    public abstract void crossOver(List<AbstractMember> population);
 
     public void select(List<AbstractMember> population) {
         List<AbstractMember> bestNThMember = getNBestMembers(5, population);
 
-        selection.select(population, populationSize);
+        abstractSelection.select(population, populationSize);
         population.addAll(bestNThMember);
     }
 
@@ -135,4 +138,31 @@ public abstract class AbstractGeneticAlgorithm {
 //        }
 
     }
+
+    public void crossOver(List<AbstractMember> population) {
+        List<AbstractMember> crossoverPool = new ArrayList<>();
+
+        for (AbstractMember member : population) {
+            double rand = Number.random(0, 1);
+
+            if (rand >= crossoverProbability) {
+                crossoverPool.add(member);
+            }
+        }
+
+        for (int i = 0; i < crossoverPool.size() - 1; i += 2) {
+            AbstractMember parentA = crossoverPool.get(i);
+            AbstractMember parentB = crossoverPool.get(i + 1);
+
+            List<short[]> offspringGene = abstractCrossover.crossover(parentA, parentB);
+
+            /* TODO: csadcad */
+            List<AbstractMember> offspring = getAbstractMembersFromGene(offspringGene, null, null);
+
+            population.addAll(offspring);
+        }
+
+    }
+
+    public abstract List<AbstractMember> getAbstractMembersFromGene(List<short[]> offspringGene, GaConfig gaConfig, AbstractMutation abstractMutation);
 }

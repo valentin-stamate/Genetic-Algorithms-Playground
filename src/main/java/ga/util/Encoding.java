@@ -45,23 +45,23 @@ public class Encoding {
     }
 
     /* MAPPING */
-    public static boolean[] binaryToMap(int number, int LENGTH) {
-        boolean[] map = new boolean[LENGTH];
+    public static short[] binaryToMap(int number, int LENGTH) {
+        short[] map = new short[LENGTH];
 
         int i = 0;
         while (number != 0) {
-            map[i++] = (number % 2 == 1);
+            map[i++] = (short) (number % 2 == 1 ? 1 : 0);
             number >>= 1;
         }
 
         return map;
     }
 
-    public static int bitmapToInt(boolean[] map) {
+    public static int bitmapToInt(short[] map) {
         int n = 0;
 
         for (int i = map.length - 1; i >= 0; i--) {
-            n += (map[i] ? 1 : 0);
+            n += map[i];
             n <<= 1;
         }
 
@@ -71,18 +71,18 @@ public class Encoding {
     }
 
     /* VECTOR TO BITMAP <-> BITMAP TO VECTOR */
-    public static boolean[] toBitMapVector(double[] value, double start, double end, int precision) {
+    public static short[] toBitMapVector(double[] value, double start, double end, int precision) {
         int LENGTH = calculateBitMapNumberLength(end - start, precision);
 
         int n = value.length;
 
-        boolean[] bitmap = new boolean[n * LENGTH];
+        short[] bitmap = new short[n * LENGTH];
 
         for (int i = 0; i < n; i++) {
             int binary = doubleMappedToBinary(start, value[i], end, precision);
             int grayEncoding = toGray(binary);
 
-            boolean[] bitmapValue = binaryToMap(grayEncoding, LENGTH);
+            short[] bitmapValue = binaryToMap(grayEncoding, LENGTH);
 
             Vector.copyInto(bitmap, bitmapValue, i * LENGTH, LENGTH);
         }
@@ -90,7 +90,7 @@ public class Encoding {
         return bitmap;
     }
 
-    public static double[] toDoubleVector(boolean[] bitmap, double start, double end, int precision) {
+    public static double[] toDoubleVector(short[] bitmap, double start, double end, int precision) {
         int LENGTH = calculateBitMapNumberLength(end - start, precision);
 
         int n = bitmap.length / LENGTH;
@@ -98,7 +98,7 @@ public class Encoding {
         double[] values = new double[n];
 
         for (int i = 0; i < n; i++) {
-            boolean[] numberBitMap = Vector.getSubVector(bitmap, i * LENGTH, LENGTH);
+            short[] numberBitMap = Vector.getSubVector(bitmap, i * LENGTH, LENGTH);
 
             int grayBinary = bitmapToInt(numberBitMap);
             int binary = grayToBinary(grayBinary);
@@ -115,10 +115,10 @@ public class Encoding {
     }
 
     /* PRINT STUFF */
-    public static void printBitmapVector(boolean[] bitmap, int LENGTH) {
+    public static void printBitmapVector(short[] bitmap, int LENGTH) {
         int n = bitmap.length;
         for (int i = 0; i < n; i++) {
-            System.out.printf("%d", bitmap[i] ? 1 : 0);
+            System.out.printf("%d", bitmap[i]);
 
             if ((i + 1) % LENGTH == 0) {
                 System.out.print(" ");

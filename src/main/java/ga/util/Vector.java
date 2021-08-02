@@ -1,14 +1,14 @@
 package ga.util;
 
 public class Vector {
-    public static void copyInto(boolean[] bitmap, boolean[] binary, int start, int length) {
+    public static void copyInto(short[] bitmap, short[] binary, int start, int length) {
         for (int i = start; i < start + length; i++) {
             bitmap[i] = binary[i - start];
         }
     }
 
-    public static boolean[] getSubVector(boolean[] bitmap, int start, int length) {
-        boolean[] vector = new boolean[length];
+    public static short[] getSubVector(short[] bitmap, int start, int length) {
+        short[] vector = new short[length];
 
         for (int i = start; i < start + length; i++) {
             vector[i - start] = bitmap[i];
@@ -27,18 +27,18 @@ public class Vector {
         System.out.println("");
     }
 
-    public static void printBinary(boolean[] vector) {
+    public static void printBinary(short[] vector) {
         System.out.print("|");
         for (int i = vector.length - 1; i >= 0; i--) {
-            System.out.printf("%d", vector[i] ? 1 : 0);
+            System.out.printf("%d", vector[i]);
         }
         System.out.print("|");
 
         System.out.println("");
     }
 
-    public static boolean[] copyOf(boolean[] gene) {
-        boolean[] copy = new boolean[gene.length];
+    public static short[] copyOf(short[] gene) {
+        short[] copy = new short[gene.length];
         System.arraycopy(gene, 0, copy, 0, gene.length);
         return copy;
     }

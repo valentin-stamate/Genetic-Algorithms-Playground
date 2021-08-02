@@ -1,8 +1,9 @@
 package implementation;
 
 import ga.AbstractGeneticAlgorithm;
+import ga.config.GaConfig;
 import ga.member.AbstractMember;
-import ga.operators.crossover.OnePointCrossover;
+import ga.operators.mutation.AbstractMutation;
 import ga.util.Number;
 
 import java.util.ArrayList;
@@ -19,33 +20,6 @@ public class GeneticAlgorithm extends AbstractGeneticAlgorithm {
     }
 
     @Override
-    public void crossOver(List<AbstractMember> population) {
-        List<AbstractMember> crossoverPool = new ArrayList<>();
-
-        for (AbstractMember member : population) {
-            double rand = Number.random(0, 1);
-
-            if (rand >= crossoverProbability) {
-                crossoverPool.add(member);
-            }
-        }
-
-        for (int i = 0; i < crossoverPool.size() - 1; i += 2) {
-            Member parentA = (Member) crossoverPool.get(i);
-            Member parentB = (Member) crossoverPool.get(i + 1);
-
-            List<boolean[]> offspring = OnePointCrossover.crossover(parentA.getGene(), parentB.getGene());
-
-            Member offA = new Member(offspring.get(0), parentA.getFunction(), mutationProbability);
-            Member offB = new Member(offspring.get(1), parentB.getFunction(), mutationProbability);
-
-            population.add(offA);
-            population.add(offB);
-        }
-
-    }
-
-    @Override
     public List<AbstractMember> generatePopulation() {
         List<AbstractMember> population = new ArrayList<>();
 
@@ -56,5 +30,15 @@ public class GeneticAlgorithm extends AbstractGeneticAlgorithm {
         return population;
     }
 
+    @Override
+    public List<AbstractMember> getAbstractMembersFromGene(List<short[]> offspringGene, GaConfig gaConfig, AbstractMutation abstractMutation) {
+        List<AbstractMember> offspring = new ArrayList<>();
+
+        for (short[] gene : offspringGene) {
+            offspring.add(new Member(gene, function, mutationProbability));
+        }
+
+        return offspring;
+    }
 
 }

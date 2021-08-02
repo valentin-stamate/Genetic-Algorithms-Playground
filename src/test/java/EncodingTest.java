@@ -16,7 +16,7 @@ public class EncodingTest {
         double end = 2;
         int LENGTH = (int) Math.ceil(log2(Math.pow(10, precision) * (end - start)));
 
-        boolean[] bitmap = Encoding.toBitMapVector(input, start, end, precision);
+        short[] bitmap = Encoding.toBitMapVector(input, start, end, precision);
 
         double[] reconverted = Encoding.toDoubleVector(bitmap, start, end, precision);
 
@@ -36,7 +36,7 @@ public class EncodingTest {
     public void binaryToIntTest() {
         int expected = 3276; // 110011001100
 
-        boolean[] binary = new boolean[]{false, false, true, true, false, false, true, true, false, false, true, true}; // 110011001100
+        short[] binary = new short[]{0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1}; // 110011001100
 
         Assertions.assertEquals(expected, Encoding.bitmapToInt(binary));
     }
@@ -55,7 +55,7 @@ public class EncodingTest {
     public void binaryToMapTest() {
         int binary = 654; // 1010001110
 
-        boolean[] value = Encoding.binaryToMap(binary, 10);
+        short[] value = Encoding.binaryToMap(binary, 10);
 
         Vector.printBinary(value);
     }

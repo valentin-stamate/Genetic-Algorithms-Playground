@@ -1,19 +1,23 @@
 package ga.operators.crossover;
 
+import ga.member.AbstractMember;
 import ga.util.Number;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnePointCrossover {
+public class OnePointCrossover implements AbstractCrossover{
 
-    public static List<boolean[]> crossover(boolean[] geneA, boolean[] geneB) {
+    public List<short[]> crossover(AbstractMember parentA, AbstractMember parentB) {
+        short[] geneA = parentA.getGeneCopy();
+        short[] geneB = parentB.getGeneCopy();
+
         int n = geneA.length;
 
-        boolean[] offspringA = new boolean[n];
-        boolean[] offspringB = new boolean[n];
+        short[] offspringA = new short[n];
+        short[] offspringB = new short[n];
 
-        List<boolean[]> offspring = new ArrayList<>();
+        List<short[]> offspring = new ArrayList<>();
 
         int cut = (int) Number.random(1, n - 0.01); // (0, n)
 
@@ -32,6 +36,11 @@ public class OnePointCrossover {
         offspring.add(offspringB);
 
         return offspring;
+    }
+
+    @Override
+    public String getName() {
+        return "One Point Crossover";
     }
 
 }
