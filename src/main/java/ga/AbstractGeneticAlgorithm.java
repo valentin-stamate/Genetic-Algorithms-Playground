@@ -10,7 +10,6 @@ import ga.operators.mutation.AbstractMutation;
 import ga.operators.selection.AbstractSelection;
 import ga.util.Number;
 import ga.util.Time;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,9 +58,6 @@ public abstract class AbstractGeneticAlgorithm {
         for (int i = 1; i <= sampleSize; i++) {
             AbstractMember bestMember = oneSimulation();
 
-//            System.out.printf("Iteration %2d : Best Fitness %6.3f : Function Value: %6.3f\n",
-//                    i, bestMember.getFitness(), bestMember.getScore());
-//
             bestFitness = Math.max(bestFitness, bestMember.getFitness());
             bestScore = Math.min(bestScore, bestMember.getScore());
 
@@ -74,7 +70,7 @@ public abstract class AbstractGeneticAlgorithm {
         String time = Time.toTime(timeB - timeA);
 
         System.out.printf("Time: %s \n", time);
-        System.out.printf("Best Overall: %6.3f | Function Value: %6.3f\n", bestFitness, bestScore);
+        System.out.printf("Best Overall: %6.3f | Score: %6.3f\n", bestFitness, bestScore);
     }
 
     AbstractMember oneSimulation() {
@@ -144,7 +140,7 @@ public abstract class AbstractGeneticAlgorithm {
 
             for (PopulationObserver populationObserver : populationObserverList) {
                 if (populationObserver instanceof OnNewGeneration) {
-                    ((OnNewGeneration) populationObserver).fun(population, generation);
+                    ((OnNewGeneration) populationObserver).fun(populationCopy, generation);
                 }
             }
         }
@@ -162,13 +158,17 @@ public abstract class AbstractGeneticAlgorithm {
         }
     }
 
+    /* METHODS SPECIFIC TO THE PROBLEM */
+    public abstract List<AbstractMember> generatePopulation();
+    public abstract List<AbstractMember> getAbstractMembersFromGene(List<short[]> offspringGene, GaConfig gaConfig, AbstractMutation abstractMutation);
+
     /* UTILITY METHODS */
     public void showInfo() {
         System.out.println("---==== Genetic Algorithm Info ===---\n");
 
-        System.out.printf("Crossover Method: %s\n", "One Point Crossover");
-        System.out.printf("Mutation Method: %s\n", "Simple Mutation");
-        System.out.printf("Selection Method: %s\n", "Tournament Selection");
+        System.out.printf("Crossover Method: %s\n", abstractCrossover.getName());
+        System.out.printf("Mutation Method: %s\n", abstractMutation.getName());
+        System.out.printf("Selection Method: %s\n", abstractSelection.getName());
         System.out.printf("Sample Size: %d\n", sampleSize);
         System.out.printf("Generations: %d\n", generations);
         System.out.printf("Population: %d\n", populationSize);
@@ -225,9 +225,5 @@ public abstract class AbstractGeneticAlgorithm {
 
         return copyPopulation.get(0);
     }
-
-    /* METHODS SPECIFIC TO THE PROBLEM */
-    public abstract List<AbstractMember> generatePopulation();
-    public abstract List<AbstractMember> getAbstractMembersFromGene(List<short[]> offspringGene, GaConfig gaConfig, AbstractMutation abstractMutation);
 
 }

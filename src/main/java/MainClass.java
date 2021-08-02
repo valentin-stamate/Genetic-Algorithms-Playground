@@ -2,6 +2,8 @@ import ga.AbstractGeneticAlgorithm;
 import ga.config.GaConfig;
 import ga.operators.crossover.AbstractCrossover;
 import ga.operators.crossover.OnePointCrossover;
+import ga.operators.lambda.observers.OnNewGeneration;
+import ga.operators.lambda.observers.OnNewIteration;
 import ga.operators.mutation.AbstractMutation;
 import ga.operators.mutation.SimpleMutation;
 import ga.operators.selection.AbstractSelection;
@@ -12,19 +14,19 @@ import implementation.GeneticAlgorithm;
 public class MainClass {
     public static void main(String... args) {
 
-        int components = 30;
-        int precision = 4;
+        int components = 5;
+        int precision = 3;
 
         Function function = new Function(components, precision);
 
         int geneLength = function.calculateGeneLength();
 
         GaConfig gaConfig = GaConfig.initializeWithParameters(
-                300,
-                7000,
-                1,
+                100,
+                2000,
+                32,
                 geneLength,
-                0.0008,
+                0.008,
                 0.2
         );
 
@@ -39,6 +41,17 @@ public class MainClass {
                 abstractCrossover,
                 abstractSelection
         );
+
+        abstractGeneticAlgorithm.addPopulationObserver((OnNewIteration) (copyMember, iteration) -> {
+            System.out.printf("Iteration %2d : Best Fitness %6.3f : Function Value: %6.3f\n", iteration, copyMember.getFitness(), copyMember.getScore());
+        });
+
+        abstractGeneticAlgorithm.addPopulationObserver((OnNewGeneration) (copyPopulation, generation) -> {
+
+        });
+
+        abstractGeneticAlgorithm.showInfo();
+        System.out.println("");
 
         abstractGeneticAlgorithm.start();
 

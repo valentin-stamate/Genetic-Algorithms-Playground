@@ -5,5 +5,5 @@ import ga.operators.lambda.PopulationObserver;
 
 @FunctionalInterface
 public interface OnNewIteration extends PopulationObserver {
-    void fun(AbstractMember population, int iteration);
+    void fun(AbstractMember copyMember, int iteration);
 }

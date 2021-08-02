@@ -7,5 +7,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface OnNewGeneration extends PopulationObserver {
-    void fun(List<AbstractMember> population, int generation);
+    void fun(List<AbstractMember> copyPopulation, int generation);
 }
