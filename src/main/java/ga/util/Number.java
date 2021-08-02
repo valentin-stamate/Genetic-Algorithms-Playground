@@ -12,4 +12,9 @@ public class Number {
     public static double toPercent(double rawProb) {
         return rawProb * 100;
     }
+
+    /* MATH STUFF */
+    public static double log2(double n) {
+        return Math.log(n) / Math.log(2);
+    }
 }

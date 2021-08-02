@@ -2,34 +2,34 @@ package ga.operators.crossover;
 
 import ga.member.AbstractMember;
 import ga.util.Number;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnePointCrossover implements AbstractCrossover{
+public class OnePointCrossover implements AbstractCrossover {
 
-    public List<short[]> crossover(AbstractMember parentA, AbstractMember parentB) {
-        short[] geneA = parentA.getGeneCopy();
-        short[] geneB = parentB.getGeneCopy();
+    @Override
+    public List<short[]> crossoverParents(AbstractMember parentA, AbstractMember parentB) {
+        short[] parentGeneA = parentA.getGene();
+        short[] parentGeneB = parentB.getGene();
 
-        int n = geneA.length;
+        int n = parentGeneA.length;
 
         short[] offspringA = new short[n];
         short[] offspringB = new short[n];
 
         List<short[]> offspring = new ArrayList<>();
 
-        int cut = (int) Number.random(1, n - 0.01); // (0, n)
+        int cut = (int) Number.random(1, n - 0.0001); // (0, n)
 
         for (int i = 0; i < n; i++) {
             if (i < cut) {
-                offspringA[i] = geneA[i];
-                offspringB[i] = geneB[i];
+                offspringA[i] = parentGeneA[i];
+                offspringB[i] = parentGeneB[i];
                 continue;
             }
 
-            offspringA[i] = geneB[i];
-            offspringB[i] = geneA[i];
+            offspringA[i] = parentGeneB[i];
+            offspringB[i] = parentGeneA[i];
         }
 
         offspring.add(offspringA);

@@ -37,9 +37,4 @@ public class Vector {
         System.out.println("");
     }
 
-    public static short[] copyOf(short[] gene) {
-        short[] copy = new short[gene.length];
-        System.arraycopy(gene, 0, copy, 0, gene.length);
-        return copy;
-    }
 }

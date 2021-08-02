@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TournamentSelection implements AbstractSelection {
     @Override
-    public void select(List<AbstractMember> population, int initialPopulation) {
+    public void selectPopulation(List<AbstractMember> population, int initialPopulation) {
         double fitnessSum = 0;
 
         for (AbstractMember member : population) {
@@ -45,4 +45,10 @@ public class TournamentSelection implements AbstractSelection {
         population.clear();
         population.addAll(newMemberList);
     }
+
+    @Override
+    public String getName() {
+        return "Tournament Selection";
+    }
+
 }

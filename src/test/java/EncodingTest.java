@@ -1,5 +1,7 @@
 import ga.util.Encoding;
+import ga.util.Number;
 import ga.util.Vector;
+import implementation.Function;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,11 +16,11 @@ public class EncodingTest {
         int precision = 3;
         double start = -1;
         double end = 2;
-        int LENGTH = (int) Math.ceil(log2(Math.pow(10, precision) * (end - start)));
+        int LENGTH = (int) Math.ceil(Number.log2(Math.pow(10, precision) * (end - start)));
 
-        short[] bitmap = Encoding.toBitMapVector(input, start, end, precision);
+        short[] bitmap = Function.toBitMapVector(input, start, end, precision);
 
-        double[] reconverted = Encoding.toDoubleVector(bitmap, start, end, precision);
+        double[] reconverted = Function.toDoubleVector(bitmap, start, end, precision);
 
         Vector.print(input);
         Vector.print(reconverted);
@@ -67,13 +69,13 @@ public class EncodingTest {
 
         double start = -1;
         double end = 2;
-        int LENGTH = (int) Math.ceil(log2(Math.pow(10, precision) * (end - start)));
+        int LENGTH = (int) Math.ceil(Number.log2(Math.pow(10, precision) * (end - start)));
 
         double value = 0.123;
 
-        int binary = Encoding.doubleMappedToBinary(start, value, end, precision);
+        int binary = Function.doubleMappedToBinary(start, value, end, precision);
 
-        double number = Encoding.binaryMappedToDouble(binary, start, end, LENGTH);
+        double number = Function.binaryMappedToDouble(binary, start, end, LENGTH);
 
         Assertions.assertEquals(value, number);
     }

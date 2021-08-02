@@ -3,10 +3,11 @@ package ga;
 import ga.config.GaConfig;
 import ga.member.AbstractMember;
 import ga.operators.crossover.AbstractCrossover;
-import ga.operators.crossover.OnePointCrossover;
+import ga.operators.lambda.PopulationObserver;
+import ga.operators.lambda.observers.OnNewGeneration;
+import ga.operators.lambda.observers.OnNewIteration;
 import ga.operators.mutation.AbstractMutation;
 import ga.operators.selection.AbstractSelection;
-import ga.operators.selection.TournamentSelection;
 import ga.util.Number;
 import ga.util.Time;
 
@@ -15,36 +16,38 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractGeneticAlgorithm {
-    protected final int populationSize = 150;
-    protected final int sampleSize = 30;
-    protected final int generations = 4000;
-    protected final double crossoverProbability = 0.2;
-    protected final double mutationProbability = 0.007;
+    protected final int populationSize;
+    protected final int sampleSize;
+    protected final int generations;
+    protected final double crossoverProbability;
+    protected final double mutationProbability;
+    protected final double geneLength;
 
-    /* Operators */
-    public final AbstractSelection abstractSelection = new TournamentSelection();
-    public final AbstractCrossover abstractCrossover = new OnePointCrossover();
+    protected final GaConfig gaConfig;
 
-    /* TODO: dsakdj */
-    protected final double geneLength = -1;
+    private final AbstractCrossover abstractCrossover;
+    protected final AbstractMutation abstractMutation;
+    private final AbstractSelection abstractSelection;
 
-    public void select(List<AbstractMember> population) {
-        List<AbstractMember> bestNThMember = getNBestMembers(5, population);
+    private final List<PopulationObserver> populationObserverList;
 
-        abstractSelection.select(population, populationSize);
-        population.addAll(bestNThMember);
-    }
+    public AbstractGeneticAlgorithm(GaConfig gaConfig, AbstractMutation abstractMutation,
+                                       AbstractCrossover abstractCrossover, AbstractSelection abstractSelection) {
 
-    public void mutate(List<AbstractMember> population) {
-        for (AbstractMember member : population) {
-            member.mutate();
-        }
-    }
+        this.abstractCrossover = abstractCrossover;
+        this.abstractMutation = abstractMutation;
+        this.abstractSelection = abstractSelection;
 
-    public void evaluate(List<AbstractMember> population) {
-        for (AbstractMember member : population) {
-            member.calculateFitness();
-        }
+        this.populationSize = gaConfig.populationSize;
+        this.sampleSize = gaConfig.sampleSize;
+        this.generations = gaConfig.generations;
+        this.crossoverProbability = gaConfig.crossoverProbability;
+        this.mutationProbability = gaConfig.mutationProbability;
+        this.geneLength = gaConfig.geneLength;
+
+        this.gaConfig = gaConfig;
+
+        this.populationObserverList = new ArrayList<>();
     }
 
     public void start() {
@@ -54,14 +57,15 @@ public abstract class AbstractGeneticAlgorithm {
         long timeA = Time.getCurrentTime();
 
         for (int i = 1; i <= sampleSize; i++) {
-
             AbstractMember bestMember = oneSimulation();
 
-            System.out.printf("Iteration %2d : Best Fitness %6.3f : Function Value: %6.3f\n",
-                    i, bestMember.getFitness(), bestMember.getScore());
-
+//            System.out.printf("Iteration %2d : Best Fitness %6.3f : Function Value: %6.3f\n",
+//                    i, bestMember.getFitness(), bestMember.getScore());
+//
             bestFitness = Math.max(bestFitness, bestMember.getFitness());
             bestScore = Math.min(bestScore, bestMember.getScore());
+
+            onPopulationNewIteration(bestMember, i);
         }
 
         System.out.println("\nDone\n");
@@ -73,18 +77,17 @@ public abstract class AbstractGeneticAlgorithm {
         System.out.printf("Best Overall: %6.3f | Function Value: %6.3f\n", bestFitness, bestScore);
     }
 
-    public AbstractMember oneSimulation() {
+    AbstractMember oneSimulation() {
         List<AbstractMember> population = generatePopulation();
 
-        evaluate(population);
-
+        evaluatePopulation(population);
         for (int i = 1; i <= generations; i++) {
-//            showGenerationStats(i, population);
+            selectPopulation(population);
+            mutatePopulation(population);
+            crossoverPopulation(population);
+            evaluatePopulation(population);
 
-            select(population);
-            mutate(population);
-            crossOver(population);
-            evaluate(population);
+            onPopulationNewGeneration(population, i);
         }
 
         population.sort(Collections.reverseOrder());
@@ -92,54 +95,16 @@ public abstract class AbstractGeneticAlgorithm {
         return population.get(0);
     }
 
-    public abstract List<AbstractMember> generatePopulation();
-
-    public void showInfo() {
-        System.out.println("---==== Genetic Algorithm Info ===---\n");
-
-        System.out.printf("Crossover Method: %s\n", "One Point Crossover");
-        System.out.printf("Mutation Method: %s\n", "Simple Mutation");
-        System.out.printf("Selection Method: %s\n", "Tournament Selection");
-        System.out.printf("Sample Size: %d\n", sampleSize);
-        System.out.printf("Generations: %d\n", generations);
-        System.out.printf("Population: %d\n", populationSize);
-        System.out.printf("Crossover Probability: %4.2f%%\n", Number.toPercent(crossoverProbability));
-        System.out.printf("Mutation Probability: %4.2f%%\n", Number.toPercent(mutationProbability));
-
-        System.out.println("");
+    /* OPERATORS & EVALUATION */
+    public void selectPopulation(List<AbstractMember> population) {
+        abstractSelection.selectPopulation(population, populationSize);
     }
 
-    public List<AbstractMember> getNBestMembers(int n, List<AbstractMember> population) {
-        List<AbstractMember> copyPopulation = new ArrayList<>(population);
-        Collections.reverse(copyPopulation);
-
-        List<AbstractMember> bestMembers = new ArrayList<>();
-
-        for (int i = 0; i < n; i++) {
-            bestMembers.add(copyPopulation.get(i));
-        }
-
-        return bestMembers;
+    public void mutatePopulation(List<AbstractMember> population) {
+        abstractMutation.mutatePopulation(population, mutationProbability);
     }
 
-    private void showGenerationStats(int generationCount, List<AbstractMember> population) {
-        List<AbstractMember> copyPopulation = new ArrayList<>(population);
-        copyPopulation.sort(Collections.reverseOrder());
-
-        AbstractMember best = copyPopulation.get(0);
-        AbstractMember worst = copyPopulation.get(copyPopulation.size() - 1);
-
-        System.out.printf("Generation %d \n Fit Best: %6.3f | Fit Worst: %6.3f | Fun Best: %6.3f | Fun Worst: %6.3f \n\n",
-                generationCount, best.getFitness(), worst.getFitness(), best.getScore(), worst.getScore());
-
-//        System.out.println("Population:");
-//        for (Member m : population) {
-//            m.show();
-//        }
-
-    }
-
-    public void crossOver(List<AbstractMember> population) {
+    public void crossoverPopulation(List<AbstractMember> population) {
         List<AbstractMember> crossoverPool = new ArrayList<>();
 
         for (AbstractMember member : population) {
@@ -154,15 +119,115 @@ public abstract class AbstractGeneticAlgorithm {
             AbstractMember parentA = crossoverPool.get(i);
             AbstractMember parentB = crossoverPool.get(i + 1);
 
-            List<short[]> offspringGene = abstractCrossover.crossover(parentA, parentB);
+            List<short[]> offspringGene = abstractCrossover.crossoverParents(parentA, parentB);
 
-            /* TODO: csadcad */
-            List<AbstractMember> offspring = getAbstractMembersFromGene(offspringGene, null, null);
+            List<AbstractMember> offspring = getAbstractMembersFromGene(offspringGene, gaConfig, abstractMutation);
 
             population.addAll(offspring);
         }
+    }
+
+    public void evaluatePopulation(List<AbstractMember> population) {
+        for (AbstractMember abstractMember : population) {
+            abstractMember.calculateFitness();
+        }
+    }
+
+    /* OBSERVERS */
+    public void addPopulationObserver(PopulationObserver populationObserver) {
+        populationObserverList.add(populationObserver);
+    }
+
+    private void onPopulationNewGeneration(List<AbstractMember> population, int generation) {
+        if (!populationObserverList.isEmpty()) {
+            List<AbstractMember> populationCopy = getPopulationCopy(population);
+
+            for (PopulationObserver populationObserver : populationObserverList) {
+                if (populationObserver instanceof OnNewGeneration) {
+                    ((OnNewGeneration) populationObserver).fun(population, generation);
+                }
+            }
+        }
+    }
+
+    private void onPopulationNewIteration(AbstractMember abstractMember, int iteration) {
+        if (!populationObserverList.isEmpty()) {
+            AbstractMember copyMember = abstractMember.getCopy();
+
+            for (PopulationObserver populationObserver : populationObserverList) {
+                if (populationObserver instanceof OnNewIteration) {
+                    ((OnNewIteration) populationObserver).fun(copyMember, iteration);
+                }
+            }
+        }
+    }
+
+    /* UTILITY METHODS */
+    public void showInfo() {
+        System.out.println("---==== Genetic Algorithm Info ===---\n");
+
+        System.out.printf("Crossover Method: %s\n", "One Point Crossover");
+        System.out.printf("Mutation Method: %s\n", "Simple Mutation");
+        System.out.printf("Selection Method: %s\n", "Tournament Selection");
+        System.out.printf("Sample Size: %d\n", sampleSize);
+        System.out.printf("Generations: %d\n", generations);
+        System.out.printf("Population: %d\n", populationSize);
+        System.out.printf("Crossover Probability: %4.2f%%\n", Number.toPercent(crossoverProbability));
+        System.out.printf("Mutation Probability: %4.2f%%\n", Number.toPercent(mutationProbability));
+    }
+
+    private void showGenerationStats(int generationCount, List<AbstractMember> population) {
+        List<AbstractMember> copyPopulation = new ArrayList<>(population);
+        copyPopulation.sort(Collections.reverseOrder());
+
+        AbstractMember best = copyPopulation.get(0);
+        AbstractMember worst = copyPopulation.get(copyPopulation.size() - 1);
+
+        System.out.printf("Generation %d \n Fit Best: %6.3f | Fit Worst: %6.3f | Fun Best: %6.3f | Fun Worst: %6.3f \n\n",
+                generationCount, best.getFitness(), worst.getFitness(), best.getScore(), worst.getScore());
+
+        showPopulation(population);
 
     }
 
+    private void showPopulation(List<AbstractMember> population) {
+        for (AbstractMember abstractMember : population) {
+            abstractMember.show();
+        }
+    }
+
+    public static List<AbstractMember> getPopulationCopy(List<AbstractMember> population) {
+        List<AbstractMember> populationCopy = new ArrayList<>();
+
+        for (AbstractMember abstractMember : population) {
+            populationCopy.add(abstractMember.getCopy());
+        }
+
+        return populationCopy;
+    }
+
+    protected static List<AbstractMember> getNBestMembers(int n, List<AbstractMember> population) {
+        List<AbstractMember> copyPopulation = new ArrayList<>(population);
+        Collections.reverse(copyPopulation);
+
+        List<AbstractMember> bestMembers = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            bestMembers.add(copyPopulation.get(i));
+        }
+
+        return bestMembers;
+    }
+
+    private static AbstractMember getBestMember(List<AbstractMember> population) {
+        List<AbstractMember> copyPopulation = new ArrayList<>(population);
+        copyPopulation.sort(Collections.reverseOrder());
+
+        return copyPopulation.get(0);
+    }
+
+    /* METHODS SPECIFIC TO THE PROBLEM */
+    public abstract List<AbstractMember> generatePopulation();
     public abstract List<AbstractMember> getAbstractMembersFromGene(List<short[]> offspringGene, GaConfig gaConfig, AbstractMutation abstractMutation);
+
 }
