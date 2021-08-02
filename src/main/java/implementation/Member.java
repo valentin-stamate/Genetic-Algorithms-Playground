@@ -6,15 +6,13 @@ import ga.util.Encoding;
 import ga.util.Number;
 import ga.util.Vector;
 
-public class Member implements AbstractMember, Comparable<Member> {
+public class Member extends AbstractMember {
     private final boolean[] gene;
     private final Function function;
     private final int geneLength;
     private final int pointSize;
 
     private final double mutationProbability;
-
-    private double fitness = Double.MAX_VALUE;
 
     public Member(Function function, double mutationProbability) {
         this.mutationProbability = mutationProbability;
@@ -55,20 +53,19 @@ public class Member implements AbstractMember, Comparable<Member> {
 
     /* CHANGE THIS IF YOU CHANGE THE PROBLEM */
     @Override
-    public void calculateFitness() {
-        double functionValue = getFunctionValue();
+    public double calculateFitness() {
+        double functionValue = calculateScore();
 
         this.fitness = Math.pow(10, 1 / (functionValue + 40) * 100);
-    }
 
-    public double getFunctionValue() {
-        double[] X = Encoding.toDoubleVector(gene, function.min(), function.max(), function.getPrecision());
-        return function.fun(X);
+        return this.fitness;
     }
 
     @Override
-    public double getFitness() {
-        return fitness;
+    public double calculateScore() {
+        double[] X = Encoding.toDoubleVector(gene, function.min(), function.max(), function.getPrecision());
+        this.score = function.fun(X);
+        return this.score;
     }
 
     @Override
@@ -93,9 +90,4 @@ public class Member implements AbstractMember, Comparable<Member> {
         return function;
     }
 
-    @Override
-    public int compareTo(Member member) {
-        return Double.compare(fitness, member.fitness);
-
-    }
 }
