@@ -1,11 +1,11 @@
+import ga.conversion.RangeDoubleToInterval;
 import ga.util.Encoding;
 import ga.util.Number;
 import ga.util.Vector;
-import implementation.Function;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static ga.util.Encoding.*;
+import static ga.util.Encoding.toGray;
 
 public class EncodingTest {
 
@@ -16,11 +16,10 @@ public class EncodingTest {
         int precision = 3;
         double start = -1;
         double end = 2;
-        int LENGTH = (int) Math.ceil(Number.log2(Math.pow(10, precision) * (end - start)));
 
-        short[] bitmap = Function.toBitMapVector(input, start, end, precision);
+        short[] bitmap = RangeDoubleToInterval.toBitMapVector(input, start, end, precision);
 
-        double[] reconverted = Function.toDoubleVector(bitmap, start, end, precision);
+        double[] reconverted = RangeDoubleToInterval.toDoubleVector(bitmap, start, end, precision);
 
         Vector.print(input);
         Vector.print(reconverted);
@@ -73,9 +72,9 @@ public class EncodingTest {
 
         double value = 0.123;
 
-        int binary = Function.doubleMappedToBinary(start, value, end, precision);
+        int binary = RangeDoubleToInterval.doubleMappedToBinary(start, value, end, precision);
 
-        double number = Function.binaryMappedToDouble(binary, start, end, LENGTH);
+        double number = RangeDoubleToInterval.binaryMappedToDouble(binary, start, end, LENGTH);
 
         Assertions.assertEquals(value, number);
     }

@@ -3,3 +3,5 @@
 /build
 *.jar
 /out
+META-INF/
+/gradle

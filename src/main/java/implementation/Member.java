@@ -1,5 +1,6 @@
 package implementation;
 
+import ga.conversion.RangeDoubleToInterval;
 import ga.member.AbstractMember;
 
 import java.util.Arrays;
@@ -27,7 +28,7 @@ public class Member extends AbstractMember {
 
     @Override
     public void calculateScore() {
-        double[] X = Function.toDoubleVector(gene, function.min(), function.max(), function.getPrecision());
+        double[] X = RangeDoubleToInterval.toDoubleVector(gene, function.min(), function.max(), function.getPrecision());
         super.score =  function.fun(X);
     }
 
