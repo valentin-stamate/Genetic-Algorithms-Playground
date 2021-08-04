@@ -1,5 +1,6 @@
 package ga.config;
 
+/** The class contains all the necessary parameters for a genetic algorithms */
 public class GaConfig {
     public final double mutationProbability;
     public final double crossoverProbability;

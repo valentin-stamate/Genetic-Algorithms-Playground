@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/** Abstract Genetic Algorithm Class. In order to use it, extend it with your own implementation of creating
+ * a member with a given gene and generating a random population. <p>
+ * It provides the standard way of running a genetic algorithm, but the methods can be overridden with
+ * the desired behaviour. */
 public abstract class AbstractGeneticAlgorithm {
     protected final int populationSize;
     protected final int sampleSize;
@@ -73,7 +77,7 @@ public abstract class AbstractGeneticAlgorithm {
         System.out.printf("Best Overall: %6.3f | Score: %6.3f\n", bestFitness, bestScore);
     }
 
-    AbstractMember oneSimulation() {
+    public AbstractMember oneSimulation() {
         List<AbstractMember> population = generatePopulation();
 
         evaluatePopulation(population);
@@ -176,7 +180,7 @@ public abstract class AbstractGeneticAlgorithm {
         System.out.printf("Mutation Probability: %4.2f%%\n", Number.toPercent(mutationProbability));
     }
 
-    private void showGenerationStats(int generationCount, List<AbstractMember> population) {
+    public void showGenerationStats(int generationCount, List<AbstractMember> population) {
         List<AbstractMember> copyPopulation = new ArrayList<>(population);
         copyPopulation.sort(Collections.reverseOrder());
 

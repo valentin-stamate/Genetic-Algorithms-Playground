@@ -9,8 +9,8 @@ public class OnePointCrossover implements AbstractCrossover {
 
     @Override
     public List<short[]> crossoverParents(AbstractMember parentA, AbstractMember parentB) {
-        short[] parentGeneA = parentA.getGene();
-        short[] parentGeneB = parentB.getGene();
+        short[] parentGeneA = parentA.getGeneCopy();
+        short[] parentGeneB = parentB.getGeneCopy();
 
         int n = parentGeneA.length;
 

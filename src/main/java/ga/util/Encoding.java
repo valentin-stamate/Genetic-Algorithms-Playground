@@ -1,5 +1,6 @@
 package ga.util;
 
+/** Helper class that converts a binary representation into: gray code and array.  */
 public class Encoding {
 
     /* GRAY */

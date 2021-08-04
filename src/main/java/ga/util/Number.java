@@ -3,7 +3,10 @@ package ga.util;
 import java.util.Random;
 
 public class Number {
-    /* https://stackoverflow.com/a/3680648/10805602 */
+    /** Generates a random number for a given range
+     * @param start is the starting value
+     * @param end   is the end value <p>
+     * @see       "https://stackoverflow.com/a/3680648/10805602" */
     public static double random(double start, double end) {
         Random r = new Random();
         return start + (end - start) * r.nextDouble();

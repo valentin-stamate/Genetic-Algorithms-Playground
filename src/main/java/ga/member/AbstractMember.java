@@ -4,12 +4,13 @@ import ga.util.Number;
 
 import java.util.Arrays;
 
-/* YOU CAN EXTEND YOUR OWN MEMBER TO FIT YOUR DESIRED ALGORITHM */
+/** Abstract member. In order to use it, extend it with your own gene interpretation as well as the fitness value
+ * and other methods provided. */
 public abstract class AbstractMember implements Comparable<AbstractMember> {
-
+    /** The gene could be represented as binary(e.g. minimum of a function) or numeric(e.g. TSP problem). */
     protected final short[] gene;
 
-    /*  PARAMETERS */
+    /*  FITNESS AND SCORE */
     protected double fitness;
     protected double score;
 
@@ -39,12 +40,13 @@ public abstract class AbstractMember implements Comparable<AbstractMember> {
         return gene;
     }
 
-    public short[] getGene() {
+    public short[] getGeneCopy() {
         return Arrays.copyOf(gene, gene.length);
     }
 
     /* INITIALIZATION */
-    private static short[] generateRandomGene(int length) {
+    /** Generates a random binary gene. If the desired representation is numeric, it can be overridden.  */
+    public static short[] generateRandomGene(int length) {
         short[] gene = new short[length];
 
         int n = gene.length;
@@ -61,6 +63,7 @@ public abstract class AbstractMember implements Comparable<AbstractMember> {
     }
 
     /* UTILITY METHODS */
+    /** Shows few member stats. */
     public void show() {
         System.out.println("---=== Member ===---:");
 
@@ -78,6 +81,7 @@ public abstract class AbstractMember implements Comparable<AbstractMember> {
     }
 
     /* COMPARATOR */
+    /** Compares two members by their fitness value. */
     @Override
     public int compareTo(AbstractMember abstractMember) {
         return Double.compare(fitness, abstractMember.fitness);
