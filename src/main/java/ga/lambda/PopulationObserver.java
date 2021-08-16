@@ -1,3 +1,3 @@
-package ga.operators.lambda;
+package ga.lambda;
 
 public interface PopulationObserver { }

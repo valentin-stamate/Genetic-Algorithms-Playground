@@ -1,11 +1,12 @@
 package ga;
 
 import ga.config.GaConfig;
+import ga.lambda.BeforeEvaluationEvent;
 import ga.member.AbstractMember;
 import ga.operators.crossover.AbstractCrossover;
-import ga.operators.lambda.PopulationObserver;
-import ga.operators.lambda.observers.OnNewGeneration;
-import ga.operators.lambda.observers.OnNewIteration;
+import ga.lambda.PopulationObserver;
+import ga.lambda.observers.OnNewGeneration;
+import ga.lambda.observers.OnNewIteration;
 import ga.operators.mutation.AbstractMutation;
 import ga.operators.selection.AbstractSelection;
 import ga.util.Number;
@@ -33,6 +34,7 @@ public abstract class AbstractGeneticAlgorithm {
     private final AbstractSelection abstractSelection;
 
     private final List<PopulationObserver> populationObserverList;
+    private final List<BeforeEvaluationEvent> beforeEvaluationEventList;
 
     public AbstractGeneticAlgorithm(GaConfig gaConfig, AbstractMutation abstractMutation,
                                        AbstractCrossover abstractCrossover, AbstractSelection abstractSelection) {
@@ -51,13 +53,23 @@ public abstract class AbstractGeneticAlgorithm {
         this.gaConfig = gaConfig;
 
         this.populationObserverList = new ArrayList<>();
+        this.beforeEvaluationEventList = new ArrayList<>();
+    }
+
+    public void startWithStats() {
+        long timeA = Time.getCurrentTime();
+
+        start();
+
+        long timeB = Time.getCurrentTime();
+        String time = Time.toTime(timeB - timeA);
+
+        System.out.printf("Time: %s \n", time);
     }
 
     public void start() {
         double bestFitness = 0;
         double bestScore = Double.MAX_VALUE;
-
-        long timeA = Time.getCurrentTime();
 
         for (int i = 1; i <= sampleSize; i++) {
             AbstractMember bestMember = oneSimulation();
@@ -68,12 +80,6 @@ public abstract class AbstractGeneticAlgorithm {
             onPopulationNewIteration(bestMember, i);
         }
 
-        System.out.println("\nDone\n");
-
-        long timeB = Time.getCurrentTime();
-        String time = Time.toTime(timeB - timeA);
-
-        System.out.printf("Time: %s \n", time);
         System.out.printf("Best Overall: %6.3f | Score: %6.3f\n", bestFitness, bestScore);
     }
 
@@ -128,6 +134,11 @@ public abstract class AbstractGeneticAlgorithm {
     }
 
     public void evaluatePopulation(List<AbstractMember> population) {
+        List<AbstractMember> populationReferenceCopy = new ArrayList<>(population);
+        for (BeforeEvaluationEvent beforeEvaluationEvent : beforeEvaluationEventList) {
+            beforeEvaluationEvent.fun(populationReferenceCopy);
+        }
+
         for (AbstractMember abstractMember : population) {
             abstractMember.calculateFitness();
         }
@@ -136,6 +147,10 @@ public abstract class AbstractGeneticAlgorithm {
     /* OBSERVERS */
     public void addPopulationObserver(PopulationObserver populationObserver) {
         populationObserverList.add(populationObserver);
+    }
+
+    public void addBeforeEvaluationObserver(BeforeEvaluationEvent beforeEvaluationEvent) {
+        beforeEvaluationEventList.add(beforeEvaluationEvent);
     }
 
     private void onPopulationNewGeneration(List<AbstractMember> population, int generation) {
@@ -198,6 +213,15 @@ public abstract class AbstractGeneticAlgorithm {
         for (AbstractMember abstractMember : population) {
             abstractMember.show();
         }
+    }
+
+    public void showPopulationFitness(List<AbstractMember> population) {
+        System.out.print("Population Fitness: ");
+        for (AbstractMember abstractMember : population) {
+            System.out.printf("%8.3f ", abstractMember.getFitness());
+        }
+
+        System.out.println("");
     }
 
     public static List<AbstractMember> getPopulationCopy(List<AbstractMember> population) {

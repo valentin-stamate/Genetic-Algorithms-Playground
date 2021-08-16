@@ -1,7 +1,7 @@
-package ga.operators.lambda.observers;
+package ga.lambda.observers;
 
 import ga.member.AbstractMember;
-import ga.operators.lambda.PopulationObserver;
+import ga.lambda.PopulationObserver;
 
 @FunctionalInterface
 public interface OnNewIteration extends PopulationObserver {
