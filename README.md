@@ -39,3 +39,7 @@ To use this library, download the .jar file provided in the release section.
  * [Gray Code](https://www.geeksforgeeks.org/decimal-equivalent-gray-code-inverse)
  * [Random In Java](https://stackoverflow.com/a/3680648/10805602)
  * [Crossover Types](https://www.ripublication.com/ijcir17/ijcirv13n7_15.pdf)
+ * [Numerical Representation](http://webpages.iust.ac.ir/yaghini/Courses/AOR_872/Genetic%20Algorithms_03.pdf)
+ * [Numerical Optimization](http://umsl.edu/cmpsci/about/People/Faculty/CezaryJanikow/folder%20two/Numerical.pdf)
+
+ The pdf resources are also available in `resources` folder.
